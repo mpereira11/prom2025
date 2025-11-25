@@ -1,5 +1,12 @@
 let invitados = [];
 
+function normalizar(texto) {
+  return texto
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, ""); // elimina tildes
+}
+
 // Cargar JSON
 fetch("./invitados.json")
   .then(res => res.json())
@@ -20,7 +27,7 @@ function searchGuest() {
 
   // Filtrar coincidencias
   const matches = invitados
-    .filter(item => item.nombre.toLowerCase().includes(input))
+    .filter(item => normalizar(item.nombre).includes(normalizar(input)))
     .slice(0, 5); // máximo 5
 
   // Mostrar sugerencias
@@ -50,7 +57,7 @@ function searchGuest() {
 
   // Si solo hay una coincidencia exacta
   const exact = matches.find(
-    item => item.nombre.toLowerCase() === input.trim()
+    item => normalizar(item.nombre).includes(normalizar(input)) === input.trim()
   );
 
   if (exact) {
