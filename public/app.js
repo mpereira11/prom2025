@@ -1,7 +1,7 @@
 let invitados = [];
 
 // Cargar JSON
-fetch("./public/invitados.json")
+fetch("./invitados.json")
   .then(res => res.json())
   .then(data => {
     invitados = data;
