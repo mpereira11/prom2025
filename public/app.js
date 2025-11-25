@@ -11,19 +11,54 @@ fetch("./invitados.json")
 function searchGuest() {
   const input = document.getElementById("searchInput").value.toLowerCase();
   const resultDiv = document.getElementById("result");
+  const suggestionsList = document.getElementById("suggestions");
 
-  if (input.length === 0) {
-    resultDiv.innerHTML = "";
-    return;
-  }
+  resultDiv.innerHTML = "";
+  suggestionsList.innerHTML = "";
 
-  const found = invitados.find(item =>
-    item.nombre.toLowerCase().includes(input)
+  if (input.length === 0) return;
+
+  // Filtrar coincidencias
+  const matches = invitados
+    .filter(item => item.nombre.toLowerCase().includes(input))
+    .slice(0, 5); // máximo 5
+
+  // Mostrar sugerencias
+  matches.forEach(item => {
+    const li = document.createElement("li");
+    li.className =
+      "flex justify-between items-center p-2 border rounded-lg cursor-pointer hover:bg-gray-100";
+
+    li.innerHTML = `
+      <span class="text-gray-800">${item.nombre}</span>
+      <span class="text-[#000582] font-semibold">Mesa ${item.mesa}</span>
+    `;
+
+    // Si el usuario toca la sugerencia → mostrarla como resultado final
+    li.addEventListener("click", () => {
+      suggestionsList.innerHTML = "";
+      resultDiv.innerHTML = `
+        <div class="text-xl font-semibold text-center">
+          ${item.nombre} está en la <span class="text-[#000582]">Mesa ${item.mesa}</span>
+        </div>
+      `;
+      document.getElementById("searchInput").value = item.nombre;
+    });
+
+    suggestionsList.appendChild(li);
+  });
+
+  // Si solo hay una coincidencia exacta
+  const exact = matches.find(
+    item => item.nombre.toLowerCase() === input.trim()
   );
 
-  if (found) {
-    resultDiv.innerHTML = `🪑 <span class="text-blue-600">${found.nombre}</span> está en la <b>Mesa ${found.mesa}</b>`;
-  } else {
-    resultDiv.innerHTML = "❌ No encontrado";
+  if (exact) {
+    resultDiv.innerHTML = `
+      <div class="text-xl font-semibold text-center">
+        ${exact.nombre} está en la <span class="text-[#000582]">Mesa ${exact.mesa}</span>
+      </div>
+    `;
   }
 }
+
