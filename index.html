@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prom – Buscador de Mesas</title>
+
+  <!-- TAILWIND CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-6">
+
+  <h1 class="text-3xl font-bold text-center mb-4">Prom - Buscador de Mesas</h1>
+  <p class="text-gray-700 mb-6 text-center">
+    Busca tu nombre para saber tu número de mesa.
+  </p>
+
+  <!-- CONTENEDOR -->
+  <div class="w-full max-w-xl bg-white shadow-lg p-6 rounded-xl">
+
+    <!-- INPUT BUSCADOR -->
+    <input
+      id="searchInput"
+      type="text"
+      placeholder="Escribe tu nombre..."
+      class="w-full p-3 border rounded-lg mb-4"
+      oninput="searchGuest()"
+    />
+
+    <!-- RESULTADO -->
+    <div id="result" class="text-xl font-semibold text-center mt-2"></div>
+  </div>
+
+  <!-- PDF -->
+  <div class="mt-10 w-full max-w-3xl">
+    <h2 class="text-2xl font-semibold mb-3 text-center">Mapa de Mesas</h2>
+
+    <iframe
+      src="./public/mapa.pdf"
+      class="w-full h-[600px] border rounded-lg"
+    ></iframe>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
