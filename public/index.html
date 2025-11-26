@@ -7,6 +7,14 @@
 
   <!-- TAILWIND CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+   <!-- Estilos para pinch-zoom dentro del modal -->
+  <style>
+    #imageModal img {
+      touch-action: pinch-zoom;
+    }
+  </style>
+  
 </head>
 
 <body class="bg-white min-h-screen flex flex-col items-center p-6 pt-24"></body>
@@ -44,9 +52,31 @@
     <div class="overflow-auto border rounded-lg" style="touch-action: pinch-zoom;">
       <img 
         src="./mapa.png"
-        class="w-full h-auto object-contain"
+        class="w-full h-auto object-contain cursor-pointer"
         alt="Mapa de mesas"
+        onclick="openModal()"
       />
+    </div>
+  </div>
+
+    <!-- MODAL -->
+  <div id="imageModal"
+      class="fixed inset-0 bg-black bg-opacity-80 hidden justify-center items-center p-4 z-50">
+    <div class="relative w-full h-full flex justify-center items-center">
+      
+      <!-- Imagen dentro del modal -->
+      <img id="modalImage"
+          src="./mapa.png"
+          class="max-w-none"
+          style="width: 100%; height: auto; touch-action: pinch-zoom;">
+
+      <!-- Botón cerrar -->
+      <button 
+        onclick="closeModal()"
+        class="absolute top-4 right-4 bg-white text-black rounded-full px-4 py-2 shadow">
+        Cerrar
+      </button>
+
     </div>
   </div>
 
