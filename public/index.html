@@ -20,7 +20,7 @@
   </p>
 
   <!-- CONTENEDOR -->
-  <div class="w-full max-w-xl bg-white shadow-md p-6 rounded-xl border border-gray-200">
+  <div class="w-full max-w-xl bg-white">
 
     <!-- INPUT BUSCADOR -->
     <input
@@ -41,10 +41,13 @@
   <div class="mt-10 w-full max-w-3xl">
     <h2 class="text-2xl font-semibold mb-3 text-center">Mapa de Mesas</h2>
 
-    <iframe
-      src="./mapa.pdf"
-      class="w-full h-[600px] border rounded-lg"
-    ></iframe>
+    <div class="overflow-auto border rounded-lg" style="touch-action: pinch-zoom;">
+      <img 
+        src="./mapa.png"
+        class="w-full h-auto object-contain"
+        alt="Mapa de mesas"
+      />
+    </div>
   </div>
 
   <script src="./app.js"></script>
