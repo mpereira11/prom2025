@@ -153,19 +153,23 @@ generarMesas();
 
 
 function mostrarIntegrantesMesa(numMesa) {
-  const resultDiv = document.getElementById("result");
-
   const integrantes = invitados
     .filter(p => p.mesa == numMesa)
     .map(p => p.nombre);
 
-  resultDiv.innerHTML = `
-    <div class="text-3xl font-bold text-[#000582] mt-4">
-      Mesa ${numMesa}
-    </div>
-    <ul class="mt-2 text-center">
-      ${integrantes.map(n => `<li class="text-lg">${n}</li>`).join("")}
-    </ul>
-  `;
+  abrirModalMesa(numMesa, integrantes);
 }
 
+
+function abrirModalMesa(numMesa, integrantes) {
+  document.getElementById("modalMesaTitulo").innerText = `Mesa ${numMesa}`;
+  
+  document.getElementById("modalMesaLista").innerHTML = integrantes
+    .map(n => `<li class="text-lg py-1">${n}</li>`).join("");
+
+  document.getElementById("modalMesa").classList.remove("hidden");
+}
+
+function cerrarModalMesa(e) {
+  document.getElementById("modalMesa").classList.add("hidden");
+}
