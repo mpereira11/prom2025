@@ -22,9 +22,27 @@
 
   <header class="w-full fixed top-0 left-0 bg-[#112250] text-white py-6 z-50"
           style="box-shadow: 0 4px 15px rgba(224, 197, 143, 0.7);">
-    <div class="max-w-5xl mx-auto px-4 text-center">
-      <h1 class="text-4xl sm:text-5xl font-bold tracking-wide">PROM 2025</h1>
-      <h2 class="text-2xl sm:text-3xl mt-2 font-semibold text-[#E0C58F]">Graduation Party</h2>
+
+    <div class="max-w-5xl mx-auto px-4 flex items-center justify-between">
+
+        <!-- LOGO IZQUIERDA -->
+      <img 
+        src="./logoprom.png" 
+        alt="Logo Prom 2025" 
+        class="h-14 w-auto object-contain"
+      />
+
+      <!-- TÍTULOS CENTRADOS -->
+      <div class="text-center flex-1 -ml-14"> 
+        <h1 class="text-4xl sm:text-5xl font-bold tracking-wide">PROM 2025</h1>
+        <h2 class="text-2xl sm:text-3xl mt-1 font-semibold text-[#E0C58F]">
+          Graduation Party
+        </h2>
+      </div>
+
+      <!-- ESPACIO VACÍO PARA EQUILIBRAR (mismo ancho que el logo) -->
+      <div class="h-14 w-14"></div>
+
     </div>
   </header>
 
@@ -42,7 +60,7 @@
       type="text"
       placeholder="Escribe tu nombre..."
       class="w-full px-2 py-2 mb-4 bg-transparent border-b-2 border-gray-300 focus:border-[#112250] focus:outline-none transition-all"
-      oninput="searchGuest()"
+      oninput="centrarTexto(this); filtrarTexto(this); searchGuest()"
     />
 
     <ul id="suggestions" class="mt-2 space-y-2"></ul>

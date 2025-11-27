@@ -101,4 +101,18 @@ function closeModal() {
   document.getElementById("imageModal").classList.add("hidden");
 }
 
+function filtrarTexto(input) {
+  input.value = input.value
+    .replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "")  // solo letras y espacios
+    .replace(/\s+/g, " ");                     // evita múltiples espacios
+}
 
+function centrarTexto(input) {
+  if (input.value.trim().length > 0) {
+    input.classList.remove("text-left");
+    input.classList.add("text-center");
+  } else {
+    input.classList.remove("text-center");
+    input.classList.add("text-left");
+  }
+}
