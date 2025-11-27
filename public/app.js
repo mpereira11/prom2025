@@ -28,70 +28,70 @@ function normalizar(texto) {
 }
 
 function searchGuest() {
-  const raw = document.getElementById("searchInput").value;
+  const input = document.getElementById("searchInput").value.toLowerCase().trim();
   const resultDiv = document.getElementById("result");
   const suggestionsList = document.getElementById("suggestions");
 
-  resultDiv.innerHTML = "";
+  // Limpiar resultado
+  resultDiv.textContent = "";
   suggestionsList.innerHTML = "";
 
-  const input = normalizar(raw);
-  if (input.length === 0) return;
-
-  // Separa en tokens, por ejemplo "carlos abondano" -> ["carlos","abondano"]
-  const tokens = input.split(" ").filter(Boolean);
-
-  // Buscar coincidencias: el nombre normalizado debe contener TODOS los tokens (any order)
-  const matches = invitados
-    .filter(item => {
-      const name = normalizar(item.nombre);
-      // every token debe estar incluido en el nombre
-      return tokens.every(tok => name.includes(tok));
-    })
-    .slice(0, 8); // <-- máximo 8 resultados
-
-  // Mostrar sugerencias (lista)
-  matches.forEach(item => {
-    const li = document.createElement("li");
-    li.className =
-      "flex justify-between items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50";
-
-    li.innerHTML = `
-      <span class="text-gray-800 text-sm sm:text-base">${item.nombre}</span>
-      <span class="text-[#000582] font-semibold ml-4">Mesa ${item.mesa}</span>
-    `;
-
-    li.addEventListener("click", () => {
-      suggestionsList.innerHTML = "";
-      resultDiv.innerHTML = `
-        <div class="text-3xl font-bold text-center mt-4 text-[#000582]">
-          MESA ${item.mesa}
-        </div>
-      `;
-      document.getElementById("searchInput").value = item.nombre;
-    });
-
-    suggestionsList.appendChild(li);
+  // 🔵 LIMPIAR COLORES DE TODAS LAS MESAS
+  document.querySelectorAll(".mesaItem").forEach(m => {
+    m.style.backgroundColor = "white";
+    m.style.color = "#112250";
+    m.style.borderColor = "#112250";
   });
 
-  // Si hay coincidencia exacta (todos los tokens forman exactamente el nombre), mostrar como resultado
-  const exact = matches.find(
-    item => normalizar(item.nombre) === input
+  if (input === "") return;
+
+  // Buscar coincidencias
+  const matches = invitados.filter(person =>
+    person.nombre.toLowerCase().includes(input)
   );
 
-  if (exact) {
-    resultDiv.innerHTML = `
-      <div class="text-3xl font-bold text-center mt-4 text-[#000582]">
-        MESA ${exact.mesa}
-      </div>
-    `;
+  // Si no hay coincidencias
+  if (matches.length === 0) {
+    resultDiv.innerHTML = `<p class="text-red-600">No se encontró el nombre.</p>`;
+    return;
   }
 
-  // Si no hay matches, mostrar "No encontrado"
-  if (matches.length === 0) {
-    resultDiv.innerHTML = `<div class="text-sm text-center text-gray-500">No se encontraron resultados</div>`;
+  // Buscar coincidencia EXACTA (para marcar mesa)
+  const exact = invitados.find(
+    person => person.nombre.toLowerCase() === input
+  );
+
+  // Si hay coincidencia exacta → mostrar resultado directo
+  if (exact) {
+    resultDiv.innerHTML = `
+      <p class="text-2xl font-semibold">
+        Mesa <span class="text-[#112250] font-bold">${exact.mesa}</span>
+      </p>
+    `;
+
+    // 🔵 MARCAR LA MESA EN EL MAPA
+    const mesaCircle = document.getElementById(`mesa-${exact.mesa}`);
+    if (mesaCircle) {
+      mesaCircle.style.backgroundColor = "#112250";
+      mesaCircle.style.color = "white";
+      mesaCircle.style.borderColor = "#E0C58F";
+    }
+
+    return;
   }
+
+  // Si no hay exacto, pero hay parciales → sugerencias
+  suggestionsList.innerHTML = matches
+    .map(
+      m => `
+      <li class="cursor-pointer p-2 border-b" onclick="seleccionarSugerencia('${m.nombre}')">
+        ${m.nombre}
+      </li>
+    `
+    )
+    .join("");
 }
+
 
 function openModal() {
   document.getElementById("imageModal").classList.remove("hidden");
@@ -116,3 +116,54 @@ function centrarTexto(input) {
     input.classList.add("text-left");
   }
 }
+
+function seleccionarSugerencia(nombre) {
+  document.getElementById("searchInput").value = nombre;
+  searchGuest();
+}
+
+
+// Generar mesas del 1 al 32 visualmente
+function generarMesas() {
+  const cont = document.getElementById("mesasContainer");
+
+  for (let i = 1; i <= 32; i++) {
+    const mesa = document.createElement("div");
+    mesa.id = `mesa-${i}`;
+    mesa.dataset.num = i;
+
+    mesa.className = `
+      mesaItem  
+      w-20 h-20 flex items-center justify-center rounded-full 
+      border-2 border-[#112250] text-[#112250] font-bold
+      transition-all duration-300
+      active:scale-95
+    `;
+
+    mesa.innerText = i;
+
+    mesa.addEventListener("click", () => mostrarIntegrantesMesa(i));
+
+    cont.appendChild(mesa);
+  }
+}
+generarMesas();
+
+
+function mostrarIntegrantesMesa(numMesa) {
+  const resultDiv = document.getElementById("result");
+
+  const integrantes = invitados
+    .filter(p => p.mesa == numMesa)
+    .map(p => p.nombre);
+
+  resultDiv.innerHTML = `
+    <div class="text-3xl font-bold text-[#000582] mt-4">
+      Mesa ${numMesa}
+    </div>
+    <ul class="mt-2 text-center">
+      ${integrantes.map(n => `<li class="text-lg">${n}</li>`).join("")}
+    </ul>
+  `;
+}
+
