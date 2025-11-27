@@ -125,62 +125,58 @@ function seleccionarSugerencia(nombre) {
 }
 
 
-// Generar mesas con posiciones exactas en forma de "T"
 function generarMesas() {
   const cont = document.getElementById("mesasContainer");
 
-  // Coordenadas de cada mesa (left, top)
+  // Coordenadas relativas (0 a 100)
+  // Cada "x" y "y" es un porcentaje dentro del contenedor
   const posiciones = {
-    // BLOQUE IZQUIERDO (1–10)
-    3:  {x: 60,  y: 20},
-    4:  {x: 130, y: 70},
-    2:  {x: 60,  y: 140},
-    5:  {x: 130, y: 190},
-    1:  {x: 60,  y: 260},
+    3:  {x: 10,  y: 2},
+    4:  {x: 22,  y: 6},
+    2:  {x: 10,  y: 12},
+    5:  {x: 22,  y: 16},
+    1:  {x: 10,  y: 22},
 
-    6:  {x: 200, y: 20},
-    9:  {x: 270, y: 70},
-    7:  {x: 200, y: 140},
-    10: {x: 270, y: 190},
-    8:  {x: 200, y: 260},
+    6:  {x: 35,  y: 2},
+    9:  {x: 47,  y: 6},
+    7:  {x: 35,  y: 12},
+    10: {x: 47,  y: 16},
+    8:  {x: 35,  y: 22},
 
-    // BLOQUE DERECHO (11–18)
-    16: {x: 340, y: 20},
-    14: {x: 410, y: 70},
-    17: {x: 340, y: 140},
-    15: {x: 410, y: 190},
-    18: {x: 340, y: 260},
+    16: {x: 60,  y: 2},
+    14: {x: 72,  y: 6},
+    17: {x: 60,  y: 12},
+    15: {x: 72,  y: 16},
+    18: {x: 60,  y: 22},
 
-    11: {x: 480, y: 20},
-    12: {x: 480, y: 140},
-    13: {x: 480, y: 260},
+    11: {x: 84,  y: 2},
+    12: {x: 84,  y: 12},
+    13: {x: 84,  y: 22},
 
-    // TRONCAL CENTRAL (19–32)
-    20: {x: 220, y: 360},
-    19: {x: 300, y: 360},
+    20: {x: 38, y: 32},
+    19: {x: 50, y: 32},
 
-    21: {x: 260, y: 430},
+    21: {x: 44, y: 38},
 
-    23: {x: 220, y: 510},
-    22: {x: 300, y: 510},
+    23: {x: 38, y: 45},
+    22: {x: 50, y: 45},
 
-    25: {x: 220, y: 600},
-    24: {x: 300, y: 600},
+    25: {x: 38, y: 53},
+    24: {x: 50, y: 53},
 
-    26: {x: 260, y: 670},
+    26: {x: 44, y: 60},
 
-    28: {x: 220, y: 750},
-    27: {x: 300, y: 750},
+    28: {x: 38, y: 67},
+    27: {x: 50, y: 67},
 
-    29: {x: 260, y: 820},
+    29: {x: 44, y: 74},
 
-    31: {x: 220, y: 900},
-    30: {x: 300, y: 900},
+    31: {x: 38, y: 81},
+    30: {x: 50, y: 81},
 
-    32: {x: 260, y: 980}
+    32: {x: 44, y: 88}
   };
 
-  // Crear cada mesa
   for (let i = 1; i <= 32; i++) {
     const mesa = document.createElement("div");
     mesa.id = `mesa-${i}`;
@@ -188,19 +184,23 @@ function generarMesas() {
 
     mesa.className = `
       mesaItem  
-      w-14 h-14 flex items-center justify-center rounded-full 
+      absolute flex items-center justify-center rounded-full
       border-2 border-[#112250] text-[#112250] font-bold
-      transition-all duration-300
-      active:scale-95
-      absolute
+      transition-all duration-300 active:scale-95
     `;
 
     mesa.innerText = i;
 
-    // Aplicar coordenadas exactas
+    // tamaño relativo
+    mesa.style.width = "12%";
+    mesa.style.height = "12%";
+    mesa.style.fontSize = "1rem";
+
+    // aplicar coordenadas proporcionales
     const pos = posiciones[i];
-    mesa.style.left = pos.x + "px";
-    mesa.style.top = pos.y + "px";
+    mesa.style.left = pos.x + "%";
+    mesa.style.top = pos.y + "%";
+    mesa.style.transform = "translate(-50%, -50%)";
 
     mesa.addEventListener("click", () => mostrarIntegrantesMesa(i));
 
@@ -209,6 +209,7 @@ function generarMesas() {
 }
 
 generarMesas();
+
 
 
 function mostrarIntegrantesMesa(numMesa) {
