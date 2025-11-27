@@ -28,7 +28,7 @@ function normalizar(texto) {
 }
 
 function searchGuest() {
-  const input = document.getElementById("searchInput").value.toLowerCase().trim();
+  const input = normalizar(document.getElementById("searchInput").value);
   const resultDiv = document.getElementById("result");
   const suggestionsList = document.getElementById("suggestions");
 
@@ -46,9 +46,12 @@ function searchGuest() {
   if (input === "") return;
 
   // Buscar coincidencias
-  const matches = invitados.filter(person =>
-    person.nombre.toLowerCase().includes(input)
-  );
+ // Buscar coincidencias (búsqueda por tokens, insensible a tildes/mayúsculas y a iniciales)
+    const tokens = input.split(" ").filter(Boolean);
+    const matches = invitados.filter(person => {
+      const name = normalizar(person.nombre);
+      return tokens.every(tok => name.includes(tok));
+    });
 
   // Si no hay coincidencias
   if (matches.length === 0) {
@@ -58,9 +61,8 @@ function searchGuest() {
 
   // Buscar coincidencia EXACTA (para marcar mesa)
   const exact = invitados.find(
-    person => person.nombre.toLowerCase() === input
+  person => normalizar(person.nombre) === input
   );
-
   // Si hay coincidencia exacta → mostrar resultado directo
   if (exact) {
     resultDiv.innerHTML = `
