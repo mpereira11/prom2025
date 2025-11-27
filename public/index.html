@@ -105,20 +105,23 @@
   </div>
 
     <!-- Modal Integrantes -->
-  <div id="modalMesa" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50"
-      onclick="cerrarModalMesa(event)">
-    
-    <div id="modalMesaContent" class="bg-white rounded-2xl p-6 w-80 max-h-[80vh] overflow-y-auto shadow-xl"
-        onclick="event.stopPropagation()">
+    <!-- Modal Integrantes (con animación) -->
+    <div id="modalMesa" 
+        class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 opacity-0 transition-opacity duration-300"
+        onclick="cerrarModalMesa(event)">
 
-      <button class="ml-auto mb-2 text-[#000582]-600 font-bold text-xl"
-              onclick="cerrarModalMesa(event)">✕</button>
+      <div id="modalMesaContent" 
+          class="bg-white rounded-2xl p-6 w-80 max-h-[80vh] overflow-y-auto shadow-xl transform scale-90 transition-transform duration-300"
+          onclick="event.stopPropagation()">
 
-      <div id="modalMesaTitulo" class="text-3xl font-bold text-[#000582] text-center"></div>
-      <ul id="modalMesaLista" class="mt-4 text-center"></ul>
+        <button class="ml-auto mb-2 text-[#000582]-600 font-bold text-xl"
+                onclick="cerrarModalMesa(event)">✕</button>
 
+        <div id="modalMesaTitulo" class="text-3xl font-bold text-[#000582] text-center"></div>
+        <ul id="modalMesaLista" class="mt-4 text-center"></ul>
+
+      </div>
     </div>
-  </div>
 
 
   <script src="./app.js"></script>

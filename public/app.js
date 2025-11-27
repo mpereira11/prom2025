@@ -163,13 +163,32 @@ function mostrarIntegrantesMesa(numMesa) {
 
 function abrirModalMesa(numMesa, integrantes) {
   document.getElementById("modalMesaTitulo").innerText = `Mesa ${numMesa}`;
-  
+
   document.getElementById("modalMesaLista").innerHTML = integrantes
     .map(n => `<li class="text-lg py-1">${n}</li>`).join("");
 
-  document.getElementById("modalMesa").classList.remove("hidden");
+  const modal = document.getElementById("modalMesa");
+  const content = document.getElementById("modalMesaContent");
+
+  modal.classList.remove("hidden");
+
+  // Animación (fade + scale)
+  requestAnimationFrame(() => {
+    modal.classList.add("opacity-100");
+    content.classList.add("scale-100");
+  });
 }
 
 function cerrarModalMesa(e) {
-  document.getElementById("modalMesa").classList.add("hidden");
+  const modal = document.getElementById("modalMesa");
+  const content = document.getElementById("modalMesaContent");
+
+  // Animación inversa
+  modal.classList.remove("opacity-100");
+  content.classList.remove("scale-100");
+
+  // Esperar animación antes de ocultar
+  setTimeout(() => {
+    modal.classList.add("hidden");
+  }, 250);
 }
