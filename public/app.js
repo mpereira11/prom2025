@@ -125,42 +125,10 @@ function seleccionarSugerencia(nombre) {
 }
 
 
-// Generar mesas con posiciones exactas en forma de "T"
+// Generar mesas del 1 al 32 visualmente
 function generarMesas() {
   const cont = document.getElementById("mesasContainer");
 
-  // Coordenadas de cada mesa (left, top)
-    const posiciones = {
-    3:{x:60,y:20},4:{x:130,y:70},2:{x:60,y:140},5:{x:130,y:190},1:{x:60,y:260},
-    6:{x:200,y:20},9:{x:270,y:70},7:{x:200,y:140},10:{x:270,y:190},8:{x:200,y:260},
-
-    16:{x:340,y:20},14:{x:410,y:70},17:{x:340,y:140},15:{x:410,y:190},18:{x:340,y:260},
-    11:{x:480,y:20},12:{x:480,y:140},13:{x:480,y:260},
-
-    20:{x:220,y:360},19:{x:300,y:360},
-    21:{x:260,y:430},
-    23:{x:220,y:510},22:{x:300,y:510},
-    25:{x:220,y:600},24:{x:300,y:600},
-    26:{x:260,y:670},
-    28:{x:220,y:750},27:{x:300,y:750},
-    29:{x:260,y:820},
-    31:{x:220,y:900},30:{x:300,y:900},
-    32:{x:260,y:980}
-  };
-
-  // 🔥 Escalado automático para celulares
-  let escala = 1;
-  if (window.innerWidth < 480) {
-    escala = 0.78;
-  }
-
-  Object.keys(posiciones).forEach(k => {
-    posiciones[k].x *= escala;
-    posiciones[k].y *= escala;
-  });
-
-
-  // Crear cada mesa
   for (let i = 1; i <= 32; i++) {
     const mesa = document.createElement("div");
     mesa.id = `mesa-${i}`;
@@ -168,28 +136,20 @@ function generarMesas() {
 
     mesa.className = `
       mesaItem  
-      w-11 h-11 flex items-center justify-center rounded-full 
+      w-20 h-20 flex items-center justify-center rounded-full 
       border-2 border-[#112250] text-[#112250] font-bold
       transition-all duration-300
       active:scale-95
-      absolute
     `;
 
     mesa.innerText = i;
-
-    // Aplicar coordenadas exactas
-    const pos = posiciones[i];
-    mesa.style.left = pos.x + "px";
-    mesa.style.top = pos.y + "px";
 
     mesa.addEventListener("click", () => mostrarIntegrantesMesa(i));
 
     cont.appendChild(mesa);
   }
 }
-
 generarMesas();
-
 
 
 function mostrarIntegrantesMesa(numMesa) {
@@ -232,3 +192,125 @@ function cerrarModalMesa(e) {
     modal.classList.add("hidden");
   }, 250);
 }
+
+
+/* ======== Pan + Zoom en el contenedor del mapa (no toca tu lógica) ======== */
+(function() {
+  const mapFrame = document.getElementById("mapFrame");
+  const mesasContainer = document.getElementById("mesasContainer");
+  if (!mapFrame || !mesasContainer) return;
+
+  let scale = 1;
+  let originX = 0, originY = 0;
+  let lastX = 0, lastY = 0;
+  let posX = 0, posY = 0;
+  let isPanning = false;
+  let pointers = new Map();
+
+  // Aplicar transform
+  function applyTransform() {
+    mesasContainer.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+    mesasContainer.style.transformOrigin = `${originX}px ${originY}px`;
+  }
+
+  // Wheel zoom (desktop)
+  mapFrame.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    const rect = mesasContainer.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+
+    const delta = e.deltaY > 0 ? -0.06 : 0.06;
+    const newScale = Math.min(2.5, Math.max(0.7, scale + delta));
+    // adjust pos to zoom toward mouse pointer
+    posX -= (mx / scale - mx / newScale);
+    posY -= (my / scale - my / newScale);
+    scale = newScale;
+    applyTransform();
+  }, { passive: false });
+
+  // Pointer events for pan + pinch
+  mapFrame.addEventListener("pointerdown", (e) => {
+    pointers.set(e.pointerId, {x: e.clientX, y: e.clientY});
+    if (pointers.size === 1) {
+      isPanning = true;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      mapFrame.setPointerCapture(e.pointerId);
+    }
+  });
+
+  mapFrame.addEventListener("pointermove", (e) => {
+    if (!pointers.has(e.pointerId)) return;
+    pointers.set(e.pointerId, {x: e.clientX, y: e.clientY});
+
+    if (pointers.size === 1 && isPanning) {
+      // single pointer – pan
+      const dx = e.clientX - lastX;
+      const dy = e.clientY - lastY;
+      posX += dx;
+      posY += dy;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      applyTransform();
+    } else if (pointers.size === 2) {
+      // pinch-to-zoom
+      const it = pointers.values();
+      const p1 = it.next().value;
+      const p2 = it.next().value;
+      const curDist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+
+      // store previous distance on mapFrame for next move
+      if (!mapFrame._lastDist) {
+        mapFrame._lastDist = curDist;
+        return;
+      }
+      const lastDist = mapFrame._lastDist;
+      const diff = (curDist - lastDist) * 0.01;
+      const newScale = Math.min(2.5, Math.max(0.7, scale + diff));
+
+      // set zoom origin to midpoint
+      const midX = (p1.x + p2.x) / 2;
+      const midY = (p1.y + p2.y) / 2;
+      const rect = mesasContainer.getBoundingClientRect();
+      const mx = midX - rect.left;
+      const my = midY - rect.top;
+
+      posX -= (mx / scale - mx / newScale);
+      posY -= (my / scale - my / newScale);
+
+      scale = newScale;
+      mapFrame._lastDist = curDist;
+      applyTransform();
+    }
+  });
+
+  mapFrame.addEventListener("pointerup", (e) => {
+    pointers.delete(e.pointerId);
+    mapFrame._lastDist = null;
+    if (pointers.size === 0) isPanning = false;
+    try { mapFrame.releasePointerCapture(e.pointerId); } catch (err) {}
+  });
+
+  mapFrame.addEventListener("pointercancel", (e) => {
+    pointers.delete(e.pointerId);
+    mapFrame._lastDist = null;
+    if (pointers.size === 0) isPanning = false;
+  });
+
+  // Double-tap to reset
+  let lastTap = 0;
+  mapFrame.addEventListener("pointerdown", (e) => {
+    const now = Date.now();
+    if (now - lastTap < 300) {
+      // reset transform
+      scale = 1; posX = 0; posY = 0;
+      applyTransform();
+    }
+    lastTap = now;
+  });
+
+  // Make sure mesasContainer starts with transform style
+  mesasContainer.style.transform = "translate(0px, 0px) scale(1)";
+  mesasContainer.style.willChange = "transform";
+})();
