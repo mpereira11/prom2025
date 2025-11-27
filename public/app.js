@@ -64,8 +64,8 @@ function searchGuest() {
     li.addEventListener("click", () => {
       suggestionsList.innerHTML = "";
       resultDiv.innerHTML = `
-        <div class="text-lg sm:text-xl font-semibold text-center">
-          ${item.nombre} está en la <span class="text-[#000582]">Mesa ${item.mesa}</span>
+        <div class="text-3xl font-bold text-center mt-4 text-[#000582]">
+          MESA ${item.mesa}
         </div>
       `;
       document.getElementById("searchInput").value = item.nombre;
@@ -81,8 +81,8 @@ function searchGuest() {
 
   if (exact) {
     resultDiv.innerHTML = `
-      <div class="text-lg sm:text-xl font-semibold text-center">
-        ${exact.nombre} está en la <span class="text-[#000582]">Mesa ${exact.mesa}</span>
+      <div class="text-3xl font-bold text-center mt-4 text-[#000582]">
+        MESA ${exact.mesa}
       </div>
     `;
   }
