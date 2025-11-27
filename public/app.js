@@ -130,55 +130,35 @@ function generarMesas() {
   const cont = document.getElementById("mesasContainer");
 
   // Coordenadas de cada mesa (left, top)
-  const posiciones = {
-    // BLOQUE IZQUIERDO (1–10)
-    3:  {x: 60,  y: 20},
-    4:  {x: 130, y: 70},
-    2:  {x: 60,  y: 140},
-    5:  {x: 130, y: 190},
-    1:  {x: 60,  y: 260},
+    const posiciones = {
+    3:{x:60,y:20},4:{x:130,y:70},2:{x:60,y:140},5:{x:130,y:190},1:{x:60,y:260},
+    6:{x:200,y:20},9:{x:270,y:70},7:{x:200,y:140},10:{x:270,y:190},8:{x:200,y:260},
 
-    6:  {x: 200, y: 20},
-    9:  {x: 270, y: 70},
-    7:  {x: 200, y: 140},
-    10: {x: 270, y: 190},
-    8:  {x: 200, y: 260},
+    16:{x:340,y:20},14:{x:410,y:70},17:{x:340,y:140},15:{x:410,y:190},18:{x:340,y:260},
+    11:{x:480,y:20},12:{x:480,y:140},13:{x:480,y:260},
 
-    // BLOQUE DERECHO (11–18)
-    16: {x: 340, y: 20},
-    14: {x: 410, y: 70},
-    17: {x: 340, y: 140},
-    15: {x: 410, y: 190},
-    18: {x: 340, y: 260},
-
-    11: {x: 480, y: 20},
-    12: {x: 480, y: 140},
-    13: {x: 480, y: 260},
-
-    // TRONCAL CENTRAL (19–32)
-    20: {x: 220, y: 360},
-    19: {x: 300, y: 360},
-
-    21: {x: 260, y: 430},
-
-    23: {x: 220, y: 510},
-    22: {x: 300, y: 510},
-
-    25: {x: 220, y: 600},
-    24: {x: 300, y: 600},
-
-    26: {x: 260, y: 670},
-
-    28: {x: 220, y: 750},
-    27: {x: 300, y: 750},
-
-    29: {x: 260, y: 820},
-
-    31: {x: 220, y: 900},
-    30: {x: 300, y: 900},
-
-    32: {x: 260, y: 980}
+    20:{x:220,y:360},19:{x:300,y:360},
+    21:{x:260,y:430},
+    23:{x:220,y:510},22:{x:300,y:510},
+    25:{x:220,y:600},24:{x:300,y:600},
+    26:{x:260,y:670},
+    28:{x:220,y:750},27:{x:300,y:750},
+    29:{x:260,y:820},
+    31:{x:220,y:900},30:{x:300,y:900},
+    32:{x:260,y:980}
   };
+
+  // 🔥 Escalado automático para celulares
+  let escala = 1;
+  if (window.innerWidth < 480) {
+    escala = 0.78;
+  }
+
+  Object.keys(posiciones).forEach(k => {
+    posiciones[k].x *= escala;
+    posiciones[k].y *= escala;
+  });
+
 
   // Crear cada mesa
   for (let i = 1; i <= 32; i++) {
@@ -188,7 +168,7 @@ function generarMesas() {
 
     mesa.className = `
       mesaItem  
-      w-14 h-14 flex items-center justify-center rounded-full 
+      w-11 h-11 flex items-center justify-center rounded-full 
       border-2 border-[#112250] text-[#112250] font-bold
       transition-all duration-300
       active:scale-95
