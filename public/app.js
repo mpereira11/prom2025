@@ -151,6 +151,110 @@ function generarMesas() {
 }
 generarMesas();
 
+// Variables para zoom y pan
+let currentZoom = 1;
+let isPanning = false;
+let startX, startY, scrollLeft, scrollTop;
+
+const wrapper = document.getElementById("mesasZoomWrapper");
+const container = document.getElementById("mesasContainer");
+
+// Funciones de zoom
+function zoomIn() {
+  currentZoom = Math.min(currentZoom + 0.2, 3);
+  applyZoom();
+}
+
+function zoomOut() {
+  currentZoom = Math.max(currentZoom - 0.2, 0.5);
+  applyZoom();
+}
+
+function resetZoom() {
+  currentZoom = 1;
+  applyZoom();
+  wrapper.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+}
+
+function applyZoom() {
+  container.style.transform = `scale(${currentZoom})`;
+}
+
+// Pan con mouse/touch
+wrapper.addEventListener("mousedown", (e) => {
+  isPanning = true;
+  wrapper.style.cursor = "grabbing";
+  startX = e.pageX - wrapper.offsetLeft;
+  startY = e.pageY - wrapper.offsetTop;
+  scrollLeft = wrapper.scrollLeft;
+  scrollTop = wrapper.scrollTop;
+});
+
+wrapper.addEventListener("mouseleave", () => {
+  isPanning = false;
+  wrapper.style.cursor = "grab";
+});
+
+wrapper.addEventListener("mouseup", () => {
+  isPanning = false;
+  wrapper.style.cursor = "grab";
+});
+
+wrapper.addEventListener("mousemove", (e) => {
+  if (!isPanning) return;
+  e.preventDefault();
+  const x = e.pageX - wrapper.offsetLeft;
+  const y = e.pageY - wrapper.offsetTop;
+  const walkX = (x - startX) * 2;
+  const walkY = (y - startY) * 2;
+  wrapper.scrollLeft = scrollLeft - walkX;
+  wrapper.scrollTop = scrollTop - walkY;
+});
+
+// Touch support para móviles
+let lastTouchDistance = 0;
+
+wrapper.addEventListener("touchstart", (e) => {
+  if (e.touches.length === 2) {
+    lastTouchDistance = getTouchDistance(e.touches);
+  } else if (e.touches.length === 1) {
+    isPanning = true;
+    startX = e.touches[0].pageX - wrapper.offsetLeft;
+    startY = e.touches[0].pageY - wrapper.offsetTop;
+    scrollLeft = wrapper.scrollLeft;
+    scrollTop = wrapper.scrollTop;
+  }
+});
+
+wrapper.addEventListener("touchmove", (e) => {
+  if (e.touches.length === 2) {
+    e.preventDefault();
+    const distance = getTouchDistance(e.touches);
+    const delta = distance - lastTouchDistance;
+    currentZoom = Math.max(0.5, Math.min(3, currentZoom + delta * 0.01));
+    applyZoom();
+    lastTouchDistance = distance;
+  } else if (e.touches.length === 1 && isPanning) {
+    const x = e.touches[0].pageX - wrapper.offsetLeft;
+    const y = e.touches[0].pageY - wrapper.offsetTop;
+    const walkX = (x - startX) * 2;
+    const walkY = (y - startY) * 2;
+    wrapper.scrollLeft = scrollLeft - walkX;
+    wrapper.scrollTop = scrollTop - walkY;
+  }
+});
+
+wrapper.addEventListener("touchend", () => {
+  isPanning = false;
+  lastTouchDistance = 0;
+});
+
+function getTouchDistance(touches) {
+  const dx = touches[0].pageX - touches[1].pageX;
+  const dy = touches[0].pageY - touches[1].pageY;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
 
 function mostrarIntegrantesMesa(numMesa) {
   const integrantes = invitados

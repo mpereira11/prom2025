@@ -18,7 +18,7 @@
   
 </head>
 
-<body class="bg-white min-h-screen flex flex-col items-center p-6 pt-56"></body>
+<body class="bg-white min-h-screen flex flex-col items-center p-6 pt-56">
 
     <header class="w-full fixed top-0 left-0 bg-[#112250] text-white py-7 z-50"
           style="box-shadow: 0 4px 15px rgba(224, 197, 143, 0.7);">
@@ -65,12 +65,8 @@
     <div id="result" class="text-xl font-semibold text-center mt-2"></div>
   </div>
 
-  <!-- SECCIÓN DE MESAS INTERACTIVAS -->
-  <div id="mesasContainer" class="grid grid-cols-3 gap-4 mt-10 mb-10 place-items-center">
-  </div>
-
-  <!-- PDF -->
-  <div class="mt-10 w-full max-w-3xl">
+  <!-- MAPA DE MESAS -->
+  <div class="mt-10 w-full max-w-xl">
     <h2 class="text-3xl font-bold text-center mt-4 mb-4">Mapa de Mesas</h2>
 
     <div class="overflow-auto border rounded-lg" style="touch-action: pinch-zoom;">
@@ -80,6 +76,43 @@
         alt="Mapa de mesas"
         onclick="openModal()"
       />
+    </div>
+  </div>
+
+  <!-- CONTENEDOR INTERACTIVO DE MESAS -->
+  <div class="mt-10 w-full max-w-xl">
+    <h2 class="text-3xl font-bold text-center mt-4 mb-4">Mesas Interactivas</h2>
+    
+    <div id="mesasInteractivasContainer" 
+         class="border-4 border-[#112250] rounded-lg overflow-hidden bg-white"
+         style="height: 500px; position: relative;">
+      
+      <div id="mesasZoomWrapper" 
+           class="w-full h-full overflow-auto"
+           style="cursor: grab; user-select: none;">
+        
+        <div id="mesasContainer" 
+             class="grid grid-cols-3 gap-4 p-6 place-items-center"
+             style="transform-origin: top left; transition: transform 0.1s ease-out;">
+        </div>
+      
+      </div>
+      
+      <!-- Controles de Zoom -->
+      <div class="absolute bottom-4 right-4 flex flex-col gap-2">
+        <button onclick="zoomIn()" 
+                class="bg-[#112250] text-white w-10 h-10 rounded-full shadow-lg hover:bg-[#1a3370] transition">
+          +
+        </button>
+        <button onclick="zoomOut()" 
+                class="bg-[#112250] text-white w-10 h-10 rounded-full shadow-lg hover:bg-[#1a3370] transition">
+          −
+        </button>
+        <button onclick="resetZoom()" 
+                class="bg-[#E0C58F] text-[#112250] w-10 h-10 rounded-full shadow-lg hover:bg-[#d4b87f] transition text-xs font-bold">
+          ↺
+        </button>
+      </div>
     </div>
   </div>
 
