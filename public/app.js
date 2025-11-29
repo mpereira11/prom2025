@@ -45,13 +45,12 @@ function searchGuest() {
 
   if (input === "") return;
 
-  // Buscar coincidencias
- // Buscar coincidencias (búsqueda por tokens, insensible a tildes/mayúsculas y a iniciales)
-    const tokens = input.split(" ").filter(Boolean);
-    const matches = invitados.filter(person => {
-      const name = normalizar(person.nombre);
-      return tokens.every(tok => name.includes(tok));
-    });
+  // Buscar coincidencias (búsqueda por tokens, insensible a tildes/mayúsculas y a iniciales)
+  const tokens = input.split(" ").filter(Boolean);
+  const matches = invitados.filter(person => {
+    const name = normalizar(person.nombre);
+    return tokens.every(tok => name.includes(tok));
+  });
 
   // Si no hay coincidencias
   if (matches.length === 0) {
@@ -61,7 +60,7 @@ function searchGuest() {
 
   // Buscar coincidencia EXACTA (para marcar mesa)
   const exact = invitados.find(
-  person => normalizar(person.nombre) === input
+    person => normalizar(person.nombre) === input
   );
   // Si hay coincidencia exacta → mostrar resultado directo
   if (exact) {
@@ -124,31 +123,137 @@ function seleccionarSugerencia(nombre) {
   searchGuest();
 }
 
+// Crear una mesa individual
+function crearMesa(numero) {
+  const mesa = document.createElement("div");
+  mesa.id = `mesa-${numero}`;
+  mesa.dataset.num = numero;
+  mesa.className = `
+    mesaItem  
+    w-16 h-16 flex items-center justify-center rounded-full 
+    border-2 border-[#112250] text-[#112250] font-bold text-lg
+    transition-all duration-300
+    active:scale-95 cursor-pointer
+    hover:shadow-lg
+  `;
+  mesa.innerText = numero;
+  mesa.addEventListener("click", () => mostrarIntegrantesMesa(numero));
+  return mesa;
+}
 
-// Generar mesas del 1 al 32 visualmente
+// Generar mesas del 1 al 32 con el nuevo layout
 function generarMesas() {
   const cont = document.getElementById("mesasContainer");
+  cont.innerHTML = ""; // Limpiar contenedor
 
-  for (let i = 1; i <= 32; i++) {
-    const mesa = document.createElement("div");
-    mesa.id = `mesa-${i}`;
-    mesa.dataset.num = i;
+  // Crear estructura principal
+  const layoutWrapper = document.createElement("div");
+  layoutWrapper.className = "flex gap-12 items-start justify-center";
 
-    mesa.className = `
-      mesaItem  
-      w-20 h-20 flex items-center justify-center rounded-full 
-      border-2 border-[#112250] text-[#112250] font-bold
-      transition-all duration-300
-      active:scale-95
-    `;
+  // COLUMNA IZQUIERDA (Mesas 1-8)
+  const columnaIzq = document.createElement("div");
+  columnaIzq.className = "flex flex-col gap-3";
+  
+  const columnasIzqData = [
+    [3, null, 6],
+    [null, 4, null, 9],
+    [2, null, 7],
+    [null, 5, null, 10],
+    [1, null, 8]
+  ];
 
-    mesa.innerText = i;
+  columnasIzqData.forEach(fila => {
+    const filaDiv = document.createElement("div");
+    filaDiv.className = "flex gap-3 items-center justify-start";
+    fila.forEach(num => {
+      if (num === null) {
+        const spacer = document.createElement("div");
+        spacer.className = "w-16 h-16";
+        filaDiv.appendChild(spacer);
+      } else {
+        filaDiv.appendChild(crearMesa(num));
+      }
+    });
+    columnaIzq.appendChild(filaDiv);
+  });
 
-    mesa.addEventListener("click", () => mostrarIntegrantesMesa(i));
+  // COLUMNA DERECHA (Mesas 11-18)
+  const columnaDer = document.createElement("div");
+  columnaDer.className = "flex flex-col gap-3";
+  
+  const columnasDerData = [
+    [16, null, 11],
+    [null, 14],
+    [17, null, 12],
+    [null, 15],
+    [18, null, 13]
+  ];
 
-    cont.appendChild(mesa);
-  }
+  columnasDerData.forEach(fila => {
+    const filaDiv = document.createElement("div");
+    filaDiv.className = "flex gap-3 items-center justify-start";
+    fila.forEach(num => {
+      if (num === null) {
+        const spacer = document.createElement("div");
+        spacer.className = "w-16 h-16";
+        filaDiv.appendChild(spacer);
+      } else {
+        filaDiv.appendChild(crearMesa(num));
+      }
+    });
+    columnaDer.appendChild(filaDiv);
+  });
+
+  // SECCIÓN CENTRAL (Mesas 19-32)
+  const seccionCentral = document.createElement("div");
+  seccionCentral.className = "flex flex-col items-center gap-4 px-8 py-6 border-l-4 border-r-4 border-[#112250] min-w-[200px]";
+  
+  const mesasCentrales = [
+    [20, 19],
+    [21],
+    [23, 22],
+    null, // Separador visual
+    [25, 24],
+    [26],
+    [28, 27],
+    [29],
+    [31, 30],
+    [32]
+  ];
+
+  mesasCentrales.forEach(fila => {
+    if (fila === null) {
+      // Línea divisoria
+      const separator = document.createElement("div");
+      separator.className = "w-full border-t-2 border-dashed border-[#112250] my-2";
+      seccionCentral.appendChild(separator);
+    } else {
+      const filaDiv = document.createElement("div");
+      filaDiv.className = "flex gap-3 items-center justify-center";
+      fila.forEach(num => {
+        filaDiv.appendChild(crearMesa(num));
+      });
+      seccionCentral.appendChild(filaDiv);
+    }
+  });
+
+  // Agregar divisor superior e inferior a la sección central
+  const topBorder = document.createElement("div");
+  topBorder.className = "w-3/4 border-t-2 border-[#112250] mb-4";
+  seccionCentral.insertBefore(topBorder, seccionCentral.firstChild);
+
+  const bottomBorder = document.createElement("div");
+  bottomBorder.className = "w-3/4 border-t-2 border-[#112250] mt-4";
+  seccionCentral.appendChild(bottomBorder);
+
+  // Ensamblar layout
+  layoutWrapper.appendChild(columnaIzq);
+  layoutWrapper.appendChild(seccionCentral);
+  layoutWrapper.appendChild(columnaDer);
+  
+  cont.appendChild(layoutWrapper);
 }
+
 generarMesas();
 
 // Variables para zoom y pan
@@ -255,7 +360,6 @@ function getTouchDistance(touches) {
   return Math.sqrt(dx * dx + dy * dy);
 }
 
-
 function mostrarIntegrantesMesa(numMesa) {
   const integrantes = invitados
     .filter(p => p.mesa == numMesa)
@@ -263,7 +367,6 @@ function mostrarIntegrantesMesa(numMesa) {
 
   abrirModalMesa(numMesa, integrantes);
 }
-
 
 function abrirModalMesa(numMesa, integrantes) {
   document.getElementById("modalMesaTitulo").innerText = `Mesa ${numMesa}`;

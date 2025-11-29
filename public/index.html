@@ -80,26 +80,27 @@
   </div>
 
   <!-- CONTENEDOR INTERACTIVO DE MESAS -->
-  <div class="mt-10 w-full max-w-xl">
+  <div class="mt-10 w-full max-w-xl mb-10">
     <h2 class="text-3xl font-bold text-center mt-4 mb-4">Mesas Interactivas</h2>
     
     <div id="mesasInteractivasContainer" 
          class="border-4 border-[#112250] rounded-lg overflow-hidden bg-white"
-         style="height: 500px; position: relative;">
+         style="height: 600px; position: relative;">
       
       <div id="mesasZoomWrapper" 
            class="w-full h-full overflow-auto"
            style="cursor: grab; user-select: none;">
         
         <div id="mesasContainer" 
-             class="grid grid-cols-3 gap-4 p-6 place-items-center"
+             class="p-8 min-w-max"
              style="transform-origin: top left; transition: transform 0.1s ease-out;">
+          <!-- Las mesas se generarán aquí con JavaScript -->
         </div>
       
       </div>
       
       <!-- Controles de Zoom -->
-      <div class="absolute bottom-4 right-4 flex flex-col gap-2">
+      <div class="absolute bottom-4 right-4 flex flex-col gap-2 z-10">
         <button onclick="zoomIn()" 
                 class="bg-[#112250] text-white w-10 h-10 rounded-full shadow-lg hover:bg-[#1a3370] transition">
           +
@@ -138,7 +139,6 @@
   </div>
 
     <!-- Modal Integrantes -->
-    <!-- Modal Integrantes (con animación) -->
     <div id="modalMesa" 
         class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 opacity-0 transition-opacity duration-300"
         onclick="cerrarModalMesa(event)">
