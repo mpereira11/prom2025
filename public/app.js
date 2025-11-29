@@ -148,7 +148,7 @@ function generarMesas() {
 
   // Crear estructura principal
   const layoutWrapper = document.createElement("div");
-  layoutWrapper.className = "flex gap-12 items-start justify-center";
+  layoutWrapper.className = "flex gap-20 items-start justify-center";
 
   // COLUMNA IZQUIERDA (Mesas 1-8)
   const columnaIzq = document.createElement("div");
@@ -204,10 +204,24 @@ function generarMesas() {
     columnaDer.appendChild(filaDiv);
   });
 
-  // SECCIÓN CENTRAL (Mesas 19-32)
+  // SECCIÓN CENTRAL (Mesas 19-32 con ESCENARIO)
   const seccionCentral = document.createElement("div");
-  seccionCentral.className = "flex flex-col items-center gap-4 px-8 py-6 border-l-4 border-r-4 border-[#112250] min-w-[200px]";
+  seccionCentral.className = "flex flex-col items-center gap-4 px-12 py-6 border-l-4 border-r-4 border-[#112250] min-w-[280px]";
   
+  // ESCENARIO
+  const escenario = document.createElement("div");
+  escenario.className = "w-48 h-24 border-4 border-[#112250] bg-[#E0C58F] flex items-center justify-center rounded-lg shadow-lg mb-6";
+  const escenarioTexto = document.createElement("div");
+  escenarioTexto.className = "text-[#112250] font-bold text-2xl tracking-wide";
+  escenarioTexto.innerText = "ESCENARIO";
+  escenario.appendChild(escenarioTexto);
+  seccionCentral.appendChild(escenario);
+
+  // Espacio adicional antes de las mesas
+  const espacioTop = document.createElement("div");
+  espacioTop.className = "h-8";
+  seccionCentral.appendChild(espacioTop);
+
   const mesasCentrales = [
     [20, 19],
     [21],
@@ -239,7 +253,7 @@ function generarMesas() {
 
   // Agregar divisor superior e inferior a la sección central
   const topBorder = document.createElement("div");
-  topBorder.className = "w-3/4 border-t-2 border-[#112250] mb-4";
+  topBorder.className = "w-3/4 border-t-2 border-[#112250]";
   seccionCentral.insertBefore(topBorder, seccionCentral.firstChild);
 
   const bottomBorder = document.createElement("div");
@@ -257,12 +271,29 @@ function generarMesas() {
 generarMesas();
 
 // Variables para zoom y pan
-let currentZoom = 1;
+let currentZoom = 0.7; // Zoom inicial más alejado
 let isPanning = false;
 let startX, startY, scrollLeft, scrollTop;
 
 const wrapper = document.getElementById("mesasZoomWrapper");
 const container = document.getElementById("mesasContainer");
+
+// Aplicar zoom inicial y centrar
+function inicializarVista() {
+  applyZoom();
+  // Pequeño delay para asegurar que el contenido esté renderizado
+  setTimeout(() => {
+    centrarContenido();
+  }, 100);
+}
+
+// Centrar el contenido horizontalmente
+function centrarContenido() {
+  const wrapperWidth = wrapper.clientWidth;
+  const containerWidth = container.scrollWidth * currentZoom;
+  const scrollX = (containerWidth - wrapperWidth) / 2;
+  wrapper.scrollLeft = Math.max(0, scrollX);
+}
 
 // Funciones de zoom
 function zoomIn() {
@@ -271,19 +302,24 @@ function zoomIn() {
 }
 
 function zoomOut() {
-  currentZoom = Math.max(currentZoom - 0.2, 0.5);
+  currentZoom = Math.max(currentZoom - 0.2, 0.4);
   applyZoom();
 }
 
 function resetZoom() {
-  currentZoom = 1;
+  currentZoom = 0.7;
   applyZoom();
-  wrapper.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+  setTimeout(() => {
+    centrarContenido();
+  }, 50);
 }
 
 function applyZoom() {
   container.style.transform = `scale(${currentZoom})`;
 }
+
+// Inicializar vista al cargar
+inicializarVista();
 
 // Pan con mouse/touch
 wrapper.addEventListener("mousedown", (e) => {
@@ -336,7 +372,7 @@ wrapper.addEventListener("touchmove", (e) => {
     e.preventDefault();
     const distance = getTouchDistance(e.touches);
     const delta = distance - lastTouchDistance;
-    currentZoom = Math.max(0.5, Math.min(3, currentZoom + delta * 0.01));
+    currentZoom = Math.max(0.4, Math.min(3, currentZoom + delta * 0.01));
     applyZoom();
     lastTouchDistance = distance;
   } else if (e.touches.length === 1 && isPanning) {
